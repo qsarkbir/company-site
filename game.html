@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>バグ退治ゲーム | スカイライン・テクノロジーズ</title>
+<style>
+  :root{
+    --navy-950:#070b16;
+    --navy-900:#0a0f1e;
+    --navy-800:#111a2e;
+    --navy-700:#1a2740;
+    --line:#243252;
+    --ink-0:#f5f7fb;
+    --ink-1:#c7d0e4;
+    --ink-2:#8a95b5;
+    --accent:#4fd1c5;
+    --accent-2:#7c9bff;
+    --accent-grad:linear-gradient(135deg,#4fd1c5 0%,#7c9bff 100%);
+    --radius:16px;
+    --maxw:860px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:var(--navy-950);
+    color:var(--ink-0);
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+
+  .bg-grid{
+    position:fixed;inset:0;z-index:-1;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(79,209,197,.10), transparent 40%),
+      radial-gradient(circle at 85% 30%, rgba(124,155,255,.12), transparent 45%),
+      linear-gradient(var(--navy-950),var(--navy-950));
+  }
+
+  header{
+    border-bottom:1px solid var(--line);
+    background:rgba(7,11,22,.75);
+    backdrop-filter:blur(10px);
+  }
+  nav.wrap{
+    display:flex;align-items:center;justify-content:space-between;
+    height:72px;
+  }
+  .logo{
+    display:flex;align-items:center;gap:10px;
+    font-weight:700;font-size:1.05rem;letter-spacing:.02em;
+    text-decoration:none;color:var(--ink-0);
+  }
+  .logo-mark{
+    width:30px;height:30px;border-radius:8px;
+    background:var(--accent-grad);
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:800;color:var(--navy-950);
+    flex:none;
+  }
+  .back-link{
+    font-size:.88rem;color:var(--ink-1);text-decoration:none;
+    border:1px solid var(--line);padding:9px 16px;border-radius:999px;
+    transition:border-color .2s, color .2s;
+  }
+  .back-link:hover{border-color:var(--accent);color:var(--accent);}
+
+  main{padding:64px 0 96px;}
+
+  .game-head{text-align:center;margin-bottom:40px;}
+  .sec-tag{
+    color:var(--accent);font-weight:700;font-size:.8rem;
+    letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:12px;
+  }
+  .game-head h1{font-size:clamp(1.6rem,4vw,2.2rem);margin:0 0 14px;}
+  .game-head p{color:var(--ink-1);margin:0 auto;max-width:560px;}
+
+  .game-panel{
+    background:linear-gradient(180deg,var(--navy-800),var(--navy-900));
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:24px;
+  }
+
+  .hud{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:16px;flex-wrap:wrap;gap:12px;
+  }
+  .hud-item{
+    display:flex;flex-direction:column;gap:2px;
+  }
+  .hud-label{font-size:.72rem;color:var(--ink-2);letter-spacing:.05em;text-transform:uppercase;}
+  .hud-value{font-size:1.4rem;font-weight:800;}
+  .hud-value.accent{
+    background:var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+
+  #gameArea{
+    position:relative;
+    width:100%;
+    height:420px;
+    border-radius:12px;
+    overflow:hidden;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(124,155,255,.10), transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(79,209,197,.10), transparent 50%),
+      var(--navy-950);
+    border:1px solid var(--line);
+    cursor:crosshair;
+    touch-action:none;
+  }
+  .bug{
+    position:absolute;
+    width:44px;height:44px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;
+    border-radius:50%;
+    background:rgba(255,107,107,.12);
+    border:1px solid rgba(255,107,107,.4);
+    user-select:none;
+    transform:translate(-50%,-50%);
+    transition:transform .08s;
+    will-change:top;
+  }
+  .bug:hover{transform:translate(-50%,-50%) scale(1.1);}
+  .bug.gold{
+    background:rgba(79,209,197,.14);
+    border-color:rgba(79,209,197,.5);
+  }
+  .pop{
+    position:absolute;
+    font-weight:800;font-size:.95rem;
+    color:var(--accent);
+    pointer-events:none;
+    transform:translate(-50%,-50%);
+    animation:popup .6s ease forwards;
+  }
+  @keyframes popup{
+    0%{opacity:1;transform:translate(-50%,-50%) translateY(0);}
+    100%{opacity:0;transform:translate(-50%,-50%) translateY(-36px);}
+  }
+
+  .overlay{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:18px;
+    background:rgba(7,11,22,.88);
+    text-align:center;padding:24px;
+  }
+  .overlay h2{margin:0;font-size:1.5rem;}
+  .overlay p{margin:0;color:var(--ink-1);max-width:380px;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:14px 28px;border-radius:10px;
+    font-weight:700;font-size:.95rem;text-decoration:none;
+    background:var(--accent-grad);color:var(--navy-950);
+    border:none;cursor:pointer;font-family:inherit;
+    box-shadow:0 10px 30px -10px rgba(79,209,197,.6);
+    transition:transform .15s;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-ghost{
+    background:transparent;color:var(--ink-0);
+    border:1px solid var(--line);box-shadow:none;
+  }
+  .btn-ghost:hover{border-color:var(--accent);}
+
+  .rule-note{margin-top:18px;color:var(--ink-2);font-size:.85rem;text-align:center;}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+
+<header>
+  <nav class="wrap">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">S</span>
+      スカイライン・テクノロジーズ
+    </a>
+    <a href="index.html" class="back-link">← サイトに戻る</a>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="game-head">
+      <span class="sec-tag">Mini Game</span>
+      <h1>🐛 バグ退治チャレンジ</h1>
+      <p>画面に出てくる「バグ」をクリック（タップ）して退治しよう。ティール色のバグは高得点！30秒でどれだけ退治できるか挑戦してみてください。</p>
+    </div>
+
+    <div class="game-panel">
+      <div class="hud">
+        <div class="hud-item">
+          <span class="hud-label">Score</span>
+          <span class="hud-value accent" id="score">0</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">Time</span>
+          <span class="hud-value" id="time">30</span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">Best</span>
+          <span class="hud-value" id="best">0</span>
+        </div>
+      </div>
+
+      <div id="gameArea">
+        <div class="overlay" id="startOverlay">
+          <h2>準備はいいですか？</h2>
+          <p>30秒間でできるだけ多くのバグを退治してスコアを稼ごう。</p>
+          <button class="btn" id="startBtn">スタート ▶</button>
+        </div>
+      </div>
+
+      <p class="rule-note">通常のバグ：+10点　/　ティールのバグ：+30点（出現時間が短め）</p>
+    </div>
+  </div>
+</main>
+
+<script>
+(function(){
+  var gameArea = document.getElementById('gameArea');
+  var scoreEl = document.getElementById('score');
+  var timeEl = document.getElementById('time');
+  var bestEl = document.getElementById('best');
+  var startOverlay = document.getElementById('startOverlay');
+  var startBtn = document.getElementById('startBtn');
+
+  var score = 0;
+  var timeLeft = 30;
+  var playing = false;
+  var spawnTimer = null;
+  var countdownTimer = null;
+  var bugEmojis = ['🐛','🪲','🕷️'];
+
+  var best = 0;
+  try{
+    best = parseInt(localStorage.getItem('skyline_bug_best') || '0', 10) || 0;
+  }catch(e){ best = 0; }
+  bestEl.textContent = best;
+
+  function rand(min, max){ return Math.random() * (max - min) + min; }
+
+  function spawnBug(){
+    if(!playing) return;
+    var areaRect = gameArea.getBoundingClientRect();
+    var size = 44;
+    var x = rand(size, areaRect.width - size);
+    var y = rand(size, areaRect.height - size);
+
+    var isGold = Math.random() < 0.25;
+    var bug = document.createElement('div');
+    bug.className = 'bug' + (isGold ? ' gold' : '');
+    bug.textContent = bugEmojis[Math.floor(Math.random() * bugEmojis.length)];
+    bug.style.left = x + 'px';
+    bug.style.top = y + 'px';
+
+    var lifetime = isGold ? 900 : 1500;
+    var removed = false;
+
+    function remove(){
+      if(removed) return;
+      removed = true;
+      if(bug.parentNode) bug.parentNode.removeChild(bug);
+    }
+
+    bug.addEventListener('click', function(ev){
+      if(removed) return;
+      var points = isGold ? 30 : 10;
+      score += points;
+      scoreEl.textContent = score;
+
+      var pop = document.createElement('div');
+      pop.className = 'pop';
+      pop.textContent = '+' + points;
+      pop.style.left = x + 'px';
+      pop.style.top = y + 'px';
+      gameArea.appendChild(pop);
+      setTimeout(function(){ if(pop.parentNode) pop.parentNode.removeChild(pop); }, 650);
+
+      remove();
+    });
+
+    gameArea.appendChild(bug);
+    setTimeout(remove, lifetime);
+  }
+
+  function tickSpawn(){
+    spawnBug();
+    if(playing){
+      spawnTimer = setTimeout(tickSpawn, rand(380, 700));
+    }
+  }
+
+  function endGame(){
+    playing = false;
+    clearTimeout(spawnTimer);
+    clearInterval(countdownTimer);
+    gameArea.querySelectorAll('.bug, .pop').forEach(function(el){ el.remove(); });
+
+    if(score > best){
+      best = score;
+      bestEl.textContent = best;
+      try{ localStorage.setItem('skyline_bug_best', String(best)); }catch(e){}
+    }
+
+    var overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML =
+      '<h2>ゲーム終了！</h2>' +
+      '<p>スコア: <strong style="color:var(--accent);font-size:1.3rem;">' + score + '</strong> 点</p>' +
+      '<div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">' +
+        '<button class="btn" id="retryBtn">もう一度プレイ ▶</button>' +
+        '<a href="index.html" class="btn btn-ghost">サイトに戻る</a>' +
+      '</div>';
+    gameArea.appendChild(overlay);
+
+    document.getElementById('retryBtn').addEventListener('click', startGame);
+  }
+
+  function startGame(){
+    gameArea.querySelectorAll('.overlay').forEach(function(el){ el.remove(); });
+    score = 0;
+    timeLeft = 30;
+    scoreEl.textContent = score;
+    timeEl.textContent = timeLeft;
+    playing = true;
+
+    countdownTimer = setInterval(function(){
+      timeLeft -= 1;
+      timeEl.textContent = Math.max(timeLeft, 0);
+      if(timeLeft <= 0){
+        endGame();
+      }
+    }, 1000);
+
+    tickSpawn();
+  }
+
+  startBtn.addEventListener('click', startGame);
+})();
+</script>
+
+</body>
+</html>
