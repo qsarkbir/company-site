@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スカイライン・テクノロジーズ | ソフトウェア開発会社</title>
+<style>
+  :root{
+    --navy-950:#070b16;
+    --navy-900:#0a0f1e;
+    --navy-800:#111a2e;
+    --navy-700:#1a2740;
+    --navy-600:#28395a;
+    --line:#243252;
+    --ink-0:#f5f7fb;
+    --ink-1:#c7d0e4;
+    --ink-2:#8a95b5;
+    --accent:#4fd1c5;
+    --accent-2:#7c9bff;
+    --accent-grad:linear-gradient(135deg,#4fd1c5 0%,#7c9bff 100%);
+    --radius:16px;
+    --maxw:1120px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--navy-950);
+    color:var(--ink-0);
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{max-width:100%;}
+  a{color:inherit;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+  section{padding:96px 0;}
+  @media (max-width:640px){
+    section{padding:64px 0;}
+  }
+
+  /* ---------- background texture ---------- */
+  .bg-grid{
+    position:fixed;inset:0;z-index:-2;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(79,209,197,.10), transparent 40%),
+      radial-gradient(circle at 85% 30%, rgba(124,155,255,.12), transparent 45%),
+      linear-gradient(var(--navy-950),var(--navy-950));
+  }
+  .bg-skyline{
+    position:fixed;left:0;right:0;bottom:0;height:38vh;z-index:-1;
+    opacity:.35;
+    background-repeat:repeat-x;
+    background-position:bottom;
+    background-size:900px 100%;
+    background-image:
+      linear-gradient(to top, rgba(7,11,22,0) 0%, rgba(7,11,22,1) 92%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='900' height='260' viewBox='0 0 900 260'><g fill='%230f1830'><rect x='10' y='90' width='60' height='170'/><rect x='90' y='40' width='50' height='220'/><rect x='160' y='120' width='70' height='140'/><rect x='250' y='70' width='40' height='190'/><rect x='310' y='140' width='90' height='120'/><rect x='420' y='30' width='55' height='230'/><rect x='500' y='100' width='65' height='160'/><rect x='590' y='60' width='45' height='200'/><rect x='660' y='150' width='80' height='110'/><rect x='760' y='90' width='50' height='170'/><rect x='830' y='120' width='60' height='140'/></g><g fill='%2314203a'><rect x='40' y='140' width='6' height='6'/><rect x='60' y='160' width='6' height='6'/><rect x='110' y='90' width='6' height='6'/><rect x='120' y='120' width='6' height='6'/><rect x='190' y='170' width='6' height='6'/><rect x='440' y='90' width='6' height='6'/><rect x='450' y='120' width='6' height='6'/><rect x='520' y='150' width='6' height='6'/><rect x='610' y='110' width='6' height='6'/><rect x='690' y='190' width='6' height='6'/><rect x='780' y='140' width='6' height='6'/></g></svg>");
+  }
+
+  /* ---------- header / nav ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(7,11,22,.75);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    transition:background .25s, box-shadow .25s;
+  }
+  header.scrolled{
+    background:rgba(7,11,22,.94);
+    box-shadow:0 8px 24px -12px rgba(0,0,0,.6);
+  }
+  nav.wrap{
+    display:flex;align-items:center;justify-content:space-between;
+    height:72px;
+  }
+  #progress-bar{
+    position:fixed;top:0;left:0;height:3px;z-index:60;
+    width:0%;
+    background:var(--accent-grad);
+    transition:width .1s linear;
+  }
+  .logo{
+    display:flex;align-items:center;gap:10px;
+    font-weight:700;font-size:1.05rem;letter-spacing:.02em;
+    text-decoration:none;color:var(--ink-0);
+  }
+  .logo-mark{
+    width:30px;height:30px;border-radius:8px;
+    background:var(--accent-grad);
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:800;color:var(--navy-950);
+    flex:none;
+  }
+  .navlinks{display:flex;gap:32px;list-style:none;margin:0;padding:0;}
+  .navlinks a{
+    text-decoration:none;color:var(--ink-1);font-size:.92rem;font-weight:500;
+    transition:color .2s;
+  }
+  .navlinks a:hover{color:var(--accent);}
+  .navlinks a.active{color:var(--accent);}
+  .nav-cta{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 20px;border-radius:999px;
+    background:var(--accent-grad);
+    color:var(--navy-950)!important;font-weight:700;font-size:.88rem;
+    text-decoration:none;
+    box-shadow:0 8px 24px -8px rgba(79,209,197,.5);
+  }
+  .navtoggle{display:none;background:none;border:none;color:var(--ink-0);font-size:1.5rem;cursor:pointer;}
+  @media (max-width:820px){
+    .navlinks{
+      position:absolute;top:72px;left:0;right:0;
+      flex-direction:column;gap:0;
+      background:var(--navy-900);
+      border-bottom:1px solid var(--line);
+      max-height:0;overflow:hidden;transition:max-height .25s ease;
+    }
+    .navlinks.open{max-height:400px;}
+    .navlinks li{border-top:1px solid var(--line);}
+    .navlinks a{display:block;padding:16px 24px;}
+    .nav-cta{display:none;}
+    .navtoggle{display:block;}
+  }
+
+  /* ---------- hero ---------- */
+  .hero{padding:120px 0 90px;position:relative;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:.78rem;font-weight:700;letter-spacing:.08em;
+    color:var(--accent);
+    background:rgba(79,209,197,.08);
+    border:1px solid rgba(79,209,197,.25);
+    padding:6px 14px;border-radius:999px;
+    margin-bottom:24px;
+  }
+  .hero h1{
+    font-size:clamp(2.1rem,5vw,3.4rem);
+    line-height:1.35;
+    margin:0 0 24px;
+    letter-spacing:.01em;
+  }
+  .hero h1 .grad{
+    background:var(--accent-grad);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p.lead{
+    max-width:640px;
+    font-size:1.08rem;color:var(--ink-1);
+    margin:0 0 40px;
+  }
+  .hero-actions{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:64px;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:14px 28px;border-radius:10px;
+    font-weight:700;font-size:.95rem;text-decoration:none;
+    transition:transform .15s, box-shadow .15s;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-primary{
+    background:var(--accent-grad);color:var(--navy-950);
+    box-shadow:0 10px 30px -10px rgba(79,209,197,.6);
+  }
+  .btn-ghost{
+    background:transparent;color:var(--ink-0);
+    border:1px solid var(--line);
+  }
+  .btn-ghost:hover{border-color:var(--accent);}
+
+  .stat-row{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:24px;
+    border-top:1px solid var(--line);padding-top:40px;
+  }
+  .stat-row div{text-align:left;}
+  .stat-num{
+    font-size:2rem;font-weight:800;
+    background:var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+    display:block;
+  }
+  .stat-label{font-size:.85rem;color:var(--ink-2);}
+  @media (max-width:700px){
+    .stat-row{grid-template-columns:repeat(2,1fr);row-gap:32px;}
+  }
+
+  /* ---------- section heading ---------- */
+  .sec-head{max-width:640px;margin:0 0 56px;}
+  .sec-tag{
+    color:var(--accent);font-weight:700;font-size:.8rem;
+    letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:12px;
+  }
+  .sec-head h2{font-size:clamp(1.6rem,3vw,2.2rem);margin:0 0 14px;}
+  .sec-head p{color:var(--ink-1);margin:0;}
+
+  /* ---------- services ---------- */
+  .card-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
+  }
+  @media (max-width:900px){.card-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:620px){.card-grid{grid-template-columns:1fr;}}
+  .card{
+    background:linear-gradient(180deg,var(--navy-800),var(--navy-900));
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:32px 28px;
+    transition:border-color .2s, transform .2s;
+  }
+  .card:hover{border-color:var(--accent);transform:translateY(-4px);}
+  .card-icon{
+    width:48px;height:48px;border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(79,209,197,.1);
+    border:1px solid rgba(79,209,197,.25);
+    font-size:22px;margin-bottom:20px;
+  }
+  .card h3{margin:0 0 10px;font-size:1.1rem;}
+  .card p{margin:0;color:var(--ink-2);font-size:.92rem;}
+
+  /* ---------- strengths / about ---------- */
+  .about-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;
+  }
+  @media (max-width:820px){.about-grid{grid-template-columns:1fr;gap:40px;}}
+  .about-visual{
+    aspect-ratio:4/3;border-radius:var(--radius);
+    background:
+      radial-gradient(circle at 30% 20%, rgba(124,155,255,.25), transparent 55%),
+      radial-gradient(circle at 75% 75%, rgba(79,209,197,.25), transparent 55%),
+      linear-gradient(160deg,var(--navy-800),var(--navy-700));
+    border:1px solid var(--line);
+    position:relative;overflow:hidden;
+  }
+  .about-visual::before{
+    content:"</>";
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:5rem;font-weight:800;color:rgba(255,255,255,.06);
+  }
+  .about-list{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:18px;}
+  .about-list li{display:flex;gap:14px;align-items:flex-start;}
+  .about-list .chk{
+    flex:none;width:24px;height:24px;border-radius:7px;
+    background:var(--accent-grad);color:var(--navy-950);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;
+    margin-top:2px;
+  }
+  .about-list b{display:block;margin-bottom:2px;}
+  .about-list span{color:var(--ink-2);font-size:.92rem;}
+
+  /* ---------- works ---------- */
+  .work-filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px;}
+  .filter-btn{
+    padding:9px 18px;border-radius:999px;
+    background:var(--navy-800);border:1px solid var(--line);
+    color:var(--ink-1);font-size:.85rem;font-weight:600;
+    cursor:pointer;transition:all .2s;font-family:inherit;
+  }
+  .filter-btn:hover{border-color:var(--accent);color:var(--ink-0);}
+  .filter-btn.active{
+    background:var(--accent-grad);color:var(--navy-950);border-color:transparent;
+  }
+  .work-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  @media (max-width:900px){.work-grid{grid-template-columns:1fr;}}
+  .work-card{
+    border-radius:var(--radius);overflow:hidden;
+    border:1px solid var(--line);
+    background:var(--navy-800);
+    transition:opacity .25s, transform .25s;
+  }
+  .work-card.hidden{display:none;}
+  .work-thumb{
+    height:150px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:2rem;
+  }
+  .work-thumb.t1{background:linear-gradient(135deg,#1f3a5f,#123a3a);}
+  .work-thumb.t2{background:linear-gradient(135deg,#2a1f5f,#123a3a);}
+  .work-thumb.t3{background:linear-gradient(135deg,#1f5f4f,#1a2740);}
+  .work-body{padding:24px;}
+  .work-tag{font-size:.72rem;font-weight:700;letter-spacing:.05em;color:var(--accent);text-transform:uppercase;}
+  .work-body h3{margin:8px 0 8px;font-size:1.05rem;}
+  .work-body p{margin:0;color:var(--ink-2);font-size:.9rem;}
+
+  /* ---------- process ---------- */
+  .process{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:20px;counter-reset:step;
+  }
+  @media (max-width:900px){.process{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.process{grid-template-columns:1fr;}}
+  .step{
+    background:var(--navy-800);border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px 22px;position:relative;
+  }
+  .step-num{
+    font-size:.8rem;font-weight:800;color:var(--navy-950);
+    background:var(--accent-grad);
+    width:30px;height:30px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:16px;
+  }
+  .step h3{margin:0 0 8px;font-size:1rem;}
+  .step p{margin:0;color:var(--ink-2);font-size:.88rem;}
+
+  /* ---------- faq ---------- */
+  .faq-list{display:grid;gap:12px;}
+  .faq-item{
+    background:var(--navy-800);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;
+  }
+  .faq-q{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    width:100%;text-align:left;padding:20px 24px;
+    background:none;border:none;color:var(--ink-0);
+    font-family:inherit;font-size:.98rem;font-weight:600;cursor:pointer;
+  }
+  .faq-q .plus{
+    flex:none;width:24px;height:24px;border-radius:50%;
+    border:1px solid var(--line);color:var(--accent);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1rem;transition:transform .25s;
+  }
+  .faq-item.open .faq-q .plus{transform:rotate(45deg);border-color:var(--accent);}
+  .faq-a{
+    max-height:0;overflow:hidden;transition:max-height .3s ease;
+  }
+  .faq-a p{margin:0;padding:0 24px 20px;color:var(--ink-2);font-size:.9rem;}
+  .faq-item.open .faq-a{max-height:220px;}
+
+  /* ---------- team ---------- */
+  .team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;}
+  @media (max-width:820px){.team-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:480px){.team-grid{grid-template-columns:1fr;}}
+  .member{text-align:center;}
+  .avatar{
+    width:88px;height:88px;border-radius:50%;margin:0 auto 16px;
+    background:var(--accent-grad);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:1.3rem;color:var(--navy-950);
+  }
+  .member h3{margin:0 0 4px;font-size:1rem;}
+  .member span{color:var(--ink-2);font-size:.85rem;}
+
+  /* ---------- news ---------- */
+  .news-list{border-top:1px solid var(--line);}
+  .news-item{
+    display:flex;gap:24px;align-items:baseline;
+    padding:22px 0;border-bottom:1px solid var(--line);
+    flex-wrap:wrap;
+  }
+  .news-date{color:var(--ink-2);font-size:.85rem;font-variant-numeric:tabular-nums;flex:none;width:110px;}
+  .news-tag{
+    font-size:.72rem;font-weight:700;color:var(--accent);
+    border:1px solid rgba(79,209,197,.3);border-radius:999px;
+    padding:3px 10px;flex:none;
+  }
+  .news-title{color:var(--ink-0);font-size:.95rem;}
+
+  /* ---------- CTA band ---------- */
+  .cta-band{
+    background:linear-gradient(135deg,rgba(79,209,197,.12),rgba(124,155,255,.12));
+    border:1px solid var(--line);
+    border-radius:24px;
+    padding:64px 48px;
+    text-align:center;
+  }
+  .cta-band h2{margin:0 0 14px;font-size:clamp(1.5rem,3vw,2rem);}
+  .cta-band p{margin:0 0 32px;color:var(--ink-1);}
+  @media (max-width:600px){.cta-band{padding:48px 24px;}}
+
+  /* ---------- contact ---------- */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;}
+  @media (max-width:820px){.contact-grid{grid-template-columns:1fr;gap:36px;}}
+  .info-row{display:flex;gap:16px;margin-bottom:24px;align-items:flex-start;}
+  .info-icon{
+    flex:none;width:42px;height:42px;border-radius:10px;
+    background:rgba(124,155,255,.12);border:1px solid rgba(124,155,255,.3);
+    display:flex;align-items:center;justify-content:center;font-size:18px;
+  }
+  .info-row b{display:block;}
+  .info-row span{color:var(--ink-2);font-size:.9rem;}
+
+  form{display:grid;gap:16px;}
+  .field label{display:block;font-size:.85rem;color:var(--ink-1);margin-bottom:6px;}
+  .field input, .field textarea{
+    width:100%;padding:13px 14px;border-radius:10px;
+    background:var(--navy-800);border:1px solid var(--line);
+    color:var(--ink-0);font-size:.95rem;font-family:inherit;
+    outline:none;transition:border-color .2s;
+  }
+  .field input:focus, .field textarea:focus{border-color:var(--accent);}
+  .field input.error, .field textarea.error{border-color:#ff6b6b;}
+  .field .err-msg{
+    display:none;color:#ff8080;font-size:.78rem;margin-top:6px;
+  }
+  .field.invalid .err-msg{display:block;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:480px){.two-col{grid-template-columns:1fr;}}
+  .submit-btn{
+    justify-self:start;border:none;cursor:pointer;
+    font-family:inherit;
+  }
+  .submit-btn[disabled]{opacity:.6;cursor:not-allowed;transform:none!important;}
+  .form-note{font-size:.8rem;color:var(--ink-2);margin-top:-4px;}
+  .char-count{font-size:.78rem;color:var(--ink-2);text-align:right;margin-top:-10px;}
+
+  /* ---------- back to top ---------- */
+  #backToTop{
+    position:fixed;right:24px;bottom:24px;z-index:40;
+    width:48px;height:48px;border-radius:50%;
+    background:var(--accent-grad);border:none;color:var(--navy-950);
+    font-size:1.1rem;font-weight:800;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 24px -8px rgba(79,209,197,.6);
+    opacity:0;transform:translateY(12px);pointer-events:none;
+    transition:opacity .25s, transform .25s;
+  }
+  #backToTop.show{opacity:1;transform:none;pointer-events:auto;}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--line);padding:48px 0 32px;}
+  .footer-grid{
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:32px;
+    margin-bottom:32px;
+  }
+  .footer-cols{display:flex;gap:64px;flex-wrap:wrap;}
+  .footer-col h4{font-size:.85rem;margin:0 0 14px;color:var(--ink-1);}
+  .footer-col ul{list-style:none;margin:0;padding:0;display:grid;gap:10px;}
+  .footer-col a{color:var(--ink-2);text-decoration:none;font-size:.9rem;}
+  .footer-col a:hover{color:var(--accent);}
+  .footer-bottom{
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    padding-top:24px;border-top:1px solid var(--line);
+    color:var(--ink-2);font-size:.82rem;
+  }
+
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in{opacity:1;transform:none;}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-skyline"></div>
+<div id="progress-bar"></div>
+
+<header>
+  <nav class="wrap">
+    <a href="#top" class="logo">
+      <span class="logo-mark">S</span>
+      スカイライン・テクノロジーズ
+    </a>
+    <ul class="navlinks" id="navlinks">
+      <li><a href="#services">サービス</a></li>
+      <li><a href="#about">私たちについて</a></li>
+      <li><a href="#works">実績</a></li>
+      <li><a href="#process">開発の流れ</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#team">チーム</a></li>
+      <li><a href="#news">お知らせ</a></li>
+      <li><a href="#contact">お問い合わせ</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">お問い合わせ</a>
+    <button class="navtoggle" id="navtoggle" aria-label="メニュー">☰</button>
+  </nav>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow">🚀 SOFTWARE DEVELOPMENT PARTNER</span>
+      <h1>ビジネスの成長を、<br><span class="grad">確かな技術力</span>で加速する。</h1>
+      <p class="lead">
+        スカイライン・テクノロジーズは、Webサービス・業務システム・モバイルアプリの
+        企画から開発、運用までを一貫して支援するソフトウェア開発会社です。
+        小さなMVPから大規模なプロダクトまで、事業のフェーズに合わせて伴走します。
+      </p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary">無料相談を申し込む →</a>
+        <a href="#works" class="btn btn-ghost">開発実績を見る</a>
+      </div>
+      <div class="stat-row">
+        <div><span class="stat-num" data-target="120" data-suffix="+">0</span><span class="stat-label">開発プロジェクト実績</span></div>
+        <div><span class="stat-num" data-target="98" data-suffix="%">0</span><span class="stat-label">クライアント継続率</span></div>
+        <div><span class="stat-num" data-target="45" data-suffix="名">0</span><span class="stat-label">エンジニア・デザイナー</span></div>
+        <div><span class="stat-num" data-target="2014" data-suffix="">0</span><span class="stat-label">創業</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-tag">Services</span>
+        <h2>提供サービス</h2>
+        <p>戦略設計から実装、運用保守まで。プロダクトのライフサイクル全体をワンストップでサポートします。</p>
+      </div>
+      <div class="card-grid">
+        <div class="card reveal">
+          <div class="card-icon">🧭</div>
+          <h3>プロダクト企画・要件定義</h3>
+          <p>事業目標のヒアリングから課題整理、要件定義、UX設計までを伴走型で支援します。</p>
+        </div>
+        <div class="card reveal">
+          <div class="card-icon">💻</div>
+          <h3>Webシステム開発</h3>
+          <p>業務システム・SaaS・自社サービスの新規開発からリプレイスまで、堅牢なアーキテクチャで構築します。</p>
+        </div>
+        <div class="card reveal">
+          <div class="card-icon">📱</div>
+          <h3>モバイルアプリ開発</h3>
+          <p>iOS / Android のネイティブおよびクロスプラットフォームアプリを企画から一貫して開発します。</p>
+        </div>
+        <div class="card reveal">
+          <div class="card-icon">☁️</div>
+          <h3>クラウド・インフラ構築</h3>
+          <p>AWS / GCP を中心としたスケーラブルなインフラ設計、CI/CD、SRE体制の構築を支援します。</p>
+        </div>
+        <div class="card reveal">
+          <div class="card-icon">🤖</div>
+          <h3>AI・データ活用支援</h3>
+          <p>生成AI活用、レコメンド機能、データ分析基盤の構築など、AI技術の実装をサポートします。</p>
+        </div>
+        <div class="card reveal">
+          <div class="card-icon">🛠️</div>
+          <h3>保守・運用サポート</h3>
+          <p>リリース後の監視、機能改善、セキュリティ対応まで、長期的な運用体制を提供します。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="wrap about-grid">
+      <div class="reveal">
+        <div class="about-visual"></div>
+      </div>
+      <div class="reveal">
+        <span class="sec-tag">Why Skyline</span>
+        <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);margin:0 0 16px;">選ばれる理由</h2>
+        <p style="color:var(--ink-1);margin:0;">
+          私たちは「技術で終わらせない」ことを大切にしています。ビジネス成果にコミットし、
+          変化の速い市場でお客様と一緒に成長し続けるパートナーでありたいと考えています。
+        </p>
+        <ul class="about-list">
+          <li>
+            <span class="chk">✓</span>
+            <div><b>事業視点での提案力</b><span>技術ありきではなく、事業課題の解決を起点にプランを設計します。</span></div>
+          </li>
+          <li>
+            <span class="chk">✓</span>
+            <div><b>少数精鋭のフルスタックチーム</b><span>企画・設計・開発・デザインの専門家が一体となり、スピーディに開発を進めます。</span></div>
+          </li>
+          <li>
+            <span class="chk">✓</span>
+            <div><b>透明性の高いプロジェクト運営</b><span>週次レポートと専用ダッシュボードで進捗を常に可視化します。</span></div>
+          </li>
+          <li>
+            <span class="chk">✓</span>
+            <div><b>リリース後も続く伴走支援</b><span>納品して終わりではなく、運用・改善フェーズまで責任を持って支援します。</span></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKS -->
+  <section id="works">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-tag">Works</span>
+        <h2>開発実績</h2>
+        <p>業界・業種を問わず、さまざまなプロダクト開発に携わってきました（一部抜粋・架空事例）。</p>
+      </div>
+      <div class="work-filters reveal" id="workFilters">
+        <button class="filter-btn active" data-filter="all">すべて</button>
+        <button class="filter-btn" data-filter="web">Web</button>
+        <button class="filter-btn" data-filter="mobile">モバイル</button>
+        <button class="filter-btn" data-filter="ai">AI</button>
+      </div>
+      <div class="work-grid" id="workGrid">
+        <div class="work-card reveal" data-category="web">
+          <div class="work-thumb t1">🏬</div>
+          <div class="work-body">
+            <span class="work-tag">EC・小売</span>
+            <h3>在庫管理SaaS「Stockrise」</h3>
+            <p>複数店舗の在庫をリアルタイムに一元管理するクラウドサービスを企画から開発。</p>
+          </div>
+        </div>
+        <div class="work-card reveal" data-category="mobile">
+          <div class="work-thumb t2">🏥</div>
+          <div class="work-body">
+            <span class="work-tag">ヘルスケア</span>
+            <h3>オンライン診療アプリ「Carelink」</h3>
+            <p>予約・問診・決済までをワンストップで完結できるモバイルアプリを開発。</p>
+          </div>
+        </div>
+        <div class="work-card reveal" data-category="web">
+          <div class="work-thumb t3">🏗️</div>
+          <div class="work-body">
+            <span class="work-tag">建設・製造</span>
+            <h3>現場管理DXツール「Buildnote」</h3>
+            <p>紙管理が中心だった現場報告をデジタル化し、業務時間を40%削減。</p>
+          </div>
+        </div>
+        <div class="work-card reveal" data-category="ai">
+          <div class="work-thumb t2">🧠</div>
+          <div class="work-body">
+            <span class="work-tag">AI・データ</span>
+            <h3>需要予測エンジン「Forecastly」</h3>
+            <p>販売データを学習し、発注量を自動提案するAI基盤を構築。</p>
+          </div>
+        </div>
+        <div class="work-card reveal" data-category="mobile">
+          <div class="work-thumb t1">🎓</div>
+          <div class="work-body">
+            <span class="work-tag">教育</span>
+            <h3>学習管理アプリ「Studyloop」</h3>
+            <p>生徒の学習進捗と教材配信を一元化するモバイルアプリを開発。</p>
+          </div>
+        </div>
+        <div class="work-card reveal" data-category="ai">
+          <div class="work-thumb t3">💬</div>
+          <div class="work-body">
+            <span class="work-tag">カスタマーサポート</span>
+            <h3>AI問い合わせ対応「Skyline AI Studio」</h3>
+            <p>生成AIによる一次対応の自動化で、問い合わせ対応時間を60%削減。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-tag">Process</span>
+        <h2>開発の流れ</h2>
+        <p>お問い合わせから運用開始まで、明確なステップでプロジェクトを進行します。</p>
+      </div>
+      <div class="process">
+        <div class="step reveal">
+          <div class="step-num">1</div>
+          <h3>ヒアリング・提案</h3>
+          <p>事業課題やご要望をお伺いし、最適な進め方とお見積りをご提案します。</p>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">2</div>
+          <h3>要件定義・設計</h3>
+          <p>機能要件、UX、技術構成を整理し、開発スコープを明確化します。</p>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">3</div>
+          <h3>開発・テスト</h3>
+          <p>アジャイル体制で開発を進行し、週次で進捗と成果物を共有します。</p>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">4</div>
+          <h3>リリース・運用</h3>
+          <p>本番環境へのリリース後も、監視・改善・保守を継続してサポートします。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-tag">FAQ</span>
+        <h2>よくあるご質問</h2>
+        <p>お問い合わせ前によくいただくご質問をまとめました。</p>
+      </div>
+      <div class="faq-list reveal">
+        <div class="faq-item">
+          <button class="faq-q">
+            <span>開発の依頼はどのくらいの規模から可能ですか？</span>
+            <span class="plus">+</span>
+          </button>
+          <div class="faq-a"><p>MVP開発のような小規模なプロジェクトから、大規模な基幹システムの刷新まで幅広く対応しています。まずはお気軽にご相談ください。</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">
+            <span>見積もりや相談は無料ですか？</span>
+            <span class="plus">+</span>
+          </button>
+          <div class="faq-a"><p>初回のヒアリングとお見積りは無料です。要件が固まっていない段階でも、課題整理からご一緒します。</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">
+            <span>開発期間はどのくらいかかりますか？</span>
+            <span class="plus">+</span>
+          </button>
+          <div class="faq-a"><p>プロジェクトの規模により異なりますが、MVPで1〜3ヶ月、本格的なシステム開発で3〜6ヶ月程度が目安です。詳細はヒアリング時にご提案します。</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">
+            <span>リリース後の保守・運用も依頼できますか？</span>
+            <span class="plus">+</span>
+          </button>
+          <div class="faq-a"><p>はい、リリース後の監視・機能改善・セキュリティ対応まで継続的なサポート体制をご用意しています。</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section id="team">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-tag">Team</span>
+        <h2>経営メンバー</h2>
+        <p>多様なバックグラウンドを持つメンバーが、それぞれの専門性を活かして事業を牽引しています。</p>
+      </div>
+      <div class="team-grid">
+        <div class="member reveal">
+          <div class="avatar">HS</div>
+          <h3>芳賀 悠斗</h3>
+          <span>代表取締役CEO</span>
+        </div>
+        <div class="member reveal">
+          <div class="avatar">MK</div>
+          <h3>三上 佳奈</h3>
+          <span>CTO</span>
+        </div>
+        <div class="member reveal">
+          <div class="avatar">RT</div>
+          <h3>竜田 拓海</h3>
+          <span>VP of Engineering</span>
+        </div>
+        <div class="member reveal">
+          <div class="avatar">AN</div>
+          <h3>新名 藍</h3>
+          <span>Design Lead</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWS -->
+  <section id="news">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-tag">News</span>
+        <h2>お知らせ</h2>
+        <p>会社からの最新情報をお届けします。</p>
+      </div>
+      <div class="news-list reveal">
+        <div class="news-item">
+          <span class="news-date">2026.08.20</span>
+          <span class="news-tag">プレスリリース</span>
+          <span class="news-title">生成AI活用支援サービス「Skyline AI Studio」の提供を開始しました。</span>
+        </div>
+        <div class="news-item">
+          <span class="news-date">2026.06.03</span>
+          <span class="news-tag">採用</span>
+          <span class="news-title">バックエンドエンジニア・PdMの採用募集を開始しました。</span>
+        </div>
+        <div class="news-item">
+          <span class="news-date">2026.04.15</span>
+          <span class="news-tag">お知らせ</span>
+          <span class="news-title">大阪オフィスを開設し、関西エリアでの支援体制を強化しました。</span>
+        </div>
+        <div class="news-item">
+          <span class="news-date">2026.01.10</span>
+          <span class="news-tag">受賞</span>
+          <span class="news-title">「DXアワード2026」にて開発支援部門の優秀賞を受賞しました。</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section>
+    <div class="wrap">
+      <div class="cta-band reveal">
+        <h2>まずは無料相談から始めませんか？</h2>
+        <p>プロダクトのアイデア段階でも構いません。課題整理だけでもお気軽にご相談ください。</p>
+        <a href="#contact" class="btn btn-primary">お問い合わせフォームへ</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="sec-tag">Contact</span>
+        <h2>お問い合わせ</h2>
+        <p>開発のご相談、お見積り依頼など、お気軽にお問い合わせください。2営業日以内にご返信いたします。</p>
+      </div>
+      <div class="contact-grid">
+        <div class="reveal">
+          <div class="info-row">
+            <div class="info-icon">📍</div>
+            <div><b>本社所在地</b><span>〒150-0001 東京都渋谷区神宮前1-2-3 スカイラインビル8F</span></div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon">✉️</div>
+            <div><b>メール</b><span>contact@skyline-technologies.example.jp</span></div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon">📞</div>
+            <div><b>電話</b><span>03-1234-5678（平日 10:00〜18:00）</span></div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon">🏢</div>
+            <div><b>拠点</b><span>東京本社 / 大阪オフィス</span></div>
+          </div>
+        </div>
+        <form class="reveal" id="contactForm" novalidate>
+          <div class="two-col">
+            <div class="field" data-field>
+              <label for="name">お名前</label>
+              <input id="name" type="text" placeholder="山田 太郎" required>
+              <span class="err-msg">お名前をご入力ください。</span>
+            </div>
+            <div class="field" data-field>
+              <label for="company">会社名</label>
+              <input id="company" type="text" placeholder="株式会社サンプル">
+            </div>
+          </div>
+          <div class="field" data-field>
+            <label for="email">メールアドレス</label>
+            <input id="email" type="email" placeholder="you@example.com" required>
+            <span class="err-msg">正しいメールアドレスをご入力ください。</span>
+          </div>
+          <div class="field" data-field>
+            <label for="message">お問い合わせ内容</label>
+            <textarea id="message" rows="5" placeholder="ご相談内容をご記入ください" required maxlength="500"></textarea>
+            <span class="err-msg">お問い合わせ内容をご入力ください。</span>
+          </div>
+          <div class="char-count"><span id="charCount">0</span> / 500</div>
+          <p class="form-note">※ これはデモページです。送信ボタンは実際のメール送信を行いません。</p>
+          <button type="submit" class="btn btn-primary submit-btn" id="submitBtn">送信する</button>
+          <p id="formMsg" hidden style="color:var(--accent);font-size:.9rem;">✓ お問い合わせありがとうございます（デモ表示）。</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div style="max-width:280px;">
+        <a href="#top" class="logo" style="margin-bottom:14px;display:inline-flex;">
+          <span class="logo-mark">S</span>
+          スカイライン・テクノロジーズ
+        </a>
+        <p style="color:var(--ink-2);font-size:.88rem;">
+          ビジネスの成長を、確かな技術力で加速するソフトウェア開発会社。
+        </p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>サービス</h4>
+          <ul>
+            <li><a href="#services">Web開発</a></li>
+            <li><a href="#services">モバイルアプリ</a></li>
+            <li><a href="#services">クラウド構築</a></li>
+            <li><a href="#services">AI活用支援</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>会社情報</h4>
+          <ul>
+            <li><a href="#about">私たちについて</a></li>
+            <li><a href="#works">開発実績</a></li>
+            <li><a href="#team">経営メンバー</a></li>
+            <li><a href="#news">お知らせ</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>お問い合わせ</h4>
+          <ul>
+            <li><a href="#contact">無料相談を申し込む</a></li>
+            <li><a href="mailto:contact@skyline-technologies.example.jp">contact@skyline-technologies.example.jp</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Skyline Technologies, Inc. (架空の企業です)</span>
+      <span>Tokyo, Japan</span>
+    </div>
+  </div>
+</footer>
+
+<button id="backToTop" aria-label="ページ上部へ戻る">↑</button>
+
+<script>
+  // ---------- mobile nav toggle ----------
+  var toggle = document.getElementById('navtoggle');
+  var links = document.getElementById('navlinks');
+  toggle.addEventListener('click', function(){
+    links.classList.toggle('open');
+    toggle.textContent = links.classList.contains('open') ? '✕' : '☰';
+  });
+  links.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){
+      links.classList.remove('open');
+      toggle.textContent = '☰';
+    });
+  });
+
+  // ---------- scroll reveal ----------
+  var revealEls = document.querySelectorAll('.reveal');
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.12});
+  revealEls.forEach(function(el){ io.observe(el); });
+
+  // ---------- header scroll state + progress bar + back-to-top ----------
+  var headerEl = document.querySelector('header');
+  var progressBar = document.getElementById('progress-bar');
+  var backToTop = document.getElementById('backToTop');
+
+  function onScroll(){
+    var y = window.scrollY || document.documentElement.scrollTop;
+    headerEl.classList.toggle('scrolled', y > 8);
+    backToTop.classList.toggle('show', y > 500);
+
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = docHeight > 0 ? (y / docHeight) * 100 : 0;
+    progressBar.style.width = pct + '%';
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  backToTop.addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  // ---------- scrollspy: highlight active nav link ----------
+  var sections = Array.prototype.slice.call(document.querySelectorAll('main section[id]'));
+  var navAnchors = links.querySelectorAll('a');
+  var spy = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      var id = entry.target.getAttribute('id');
+      var link = links.querySelector('a[href="#' + id + '"]');
+      if(!link) return;
+      if(entry.isIntersecting){
+        navAnchors.forEach(function(a){ a.classList.remove('active'); });
+        link.classList.add('active');
+      }
+    });
+  }, {rootMargin:'-45% 0px -50% 0px'});
+  sections.forEach(function(s){ spy.observe(s); });
+
+  // ---------- animated stat counters ----------
+  var statNums = document.querySelectorAll('.stat-num');
+  function animateCount(el){
+    var target = parseInt(el.getAttribute('data-target'), 10) || 0;
+    var suffix = el.getAttribute('data-suffix') || '';
+    var duration = 1400;
+    var start = null;
+    function step(ts){
+      if(start === null) start = ts;
+      var progress = Math.min((ts - start) / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(eased * target) + suffix;
+      if(progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var statIo = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.querySelectorAll('.stat-num').forEach(animateCount);
+        statIo.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.4});
+  var statRow = document.querySelector('.stat-row');
+  if(statRow) statIo.observe(statRow);
+
+  // ---------- works filter ----------
+  var filterBtns = document.querySelectorAll('.filter-btn');
+  var workCards = document.querySelectorAll('#workGrid .work-card');
+  filterBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      filterBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var filter = btn.getAttribute('data-filter');
+      workCards.forEach(function(card){
+        var match = filter === 'all' || card.getAttribute('data-category') === filter;
+        card.classList.toggle('hidden', !match);
+      });
+    });
+  });
+
+  // ---------- FAQ accordion ----------
+  document.querySelectorAll('.faq-item').forEach(function(item){
+    var q = item.querySelector('.faq-q');
+    q.addEventListener('click', function(){
+      var wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(function(other){
+        other.classList.remove('open');
+      });
+      if(!wasOpen) item.classList.add('open');
+    });
+  });
+
+  // ---------- contact form validation ----------
+  var form = document.getElementById('contactForm');
+  var messageEl = document.getElementById('message');
+  var charCount = document.getElementById('charCount');
+
+  if(messageEl){
+    messageEl.addEventListener('input', function(){
+      charCount.textContent = messageEl.value.length;
+    });
+  }
+
+  function validateField(input){
+    var field = input.closest('.field');
+    var valid = input.checkValidity();
+    field.classList.toggle('invalid', !valid);
+    input.classList.toggle('error', !valid);
+    return valid;
+  }
+
+  if(form){
+    form.querySelectorAll('input, textarea').forEach(function(input){
+      input.addEventListener('blur', function(){
+        if(input.hasAttribute('required') || input.value){ validateField(input); }
+      });
+      input.addEventListener('input', function(){
+        if(input.closest('.field').classList.contains('invalid')){ validateField(input); }
+      });
+    });
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var requiredInputs = form.querySelectorAll('input[required], textarea[required]');
+      var allValid = true;
+      requiredInputs.forEach(function(input){
+        if(!validateField(input)) allValid = false;
+      });
+      if(!allValid){
+        var firstInvalid = form.querySelector('.field.invalid input, .field.invalid textarea');
+        if(firstInvalid) firstInvalid.focus();
+        return;
+      }
+      var submitBtn = document.getElementById('submitBtn');
+      var originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = '送信中…';
+      setTimeout(function(){
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+        document.getElementById('formMsg').hidden = false;
+        form.reset();
+        charCount.textContent = '0';
+        form.querySelectorAll('.field').forEach(function(f){ f.classList.remove('invalid'); });
+        form.querySelectorAll('input, textarea').forEach(function(i){ i.classList.remove('error'); });
+      }, 900);
+    });
+  }
+</script>
+
+</body>
+</html>
