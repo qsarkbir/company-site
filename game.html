@@ -16,6 +16,8 @@
     --ink-2:#8a95b5;
     --accent:#4fd1c5;
     --accent-2:#7c9bff;
+    --danger:#ff6b6b;
+    --warn:#ffb84d;
     --accent-grad:linear-gradient(135deg,#4fd1c5 0%,#7c9bff 100%);
     --radius:16px;
     --maxw:860px;
@@ -77,7 +79,7 @@
     letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:12px;
   }
   .game-head h1{font-size:clamp(1.6rem,4vw,2.2rem);margin:0 0 14px;}
-  .game-head p{color:var(--ink-1);margin:0 auto;max-width:560px;}
+  .game-head p{color:var(--ink-1);margin:0 auto;max-width:600px;}
 
   .game-panel{
     background:linear-gradient(180deg,var(--navy-800),var(--navy-900));
@@ -86,23 +88,45 @@
     padding:24px;
   }
 
+  /* ---------- HUD ---------- */
   .hud{
     display:flex;justify-content:space-between;align-items:center;
-    margin-bottom:16px;flex-wrap:wrap;gap:12px;
+    margin-bottom:12px;flex-wrap:wrap;gap:12px;
   }
-  .hud-item{
-    display:flex;flex-direction:column;gap:2px;
-  }
+  .hud-item{display:flex;flex-direction:column;gap:2px;min-width:56px;}
   .hud-label{font-size:.72rem;color:var(--ink-2);letter-spacing:.05em;text-transform:uppercase;}
-  .hud-value{font-size:1.4rem;font-weight:800;}
+  .hud-value{font-size:1.4rem;font-weight:800;line-height:1.3;}
   .hud-value.accent{
     background:var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent;
   }
+  .hud-value small{font-size:.75rem;font-weight:700;color:var(--ink-2);margin-left:4px;}
+  .hud-value.combo-hot{color:var(--warn);}
+  .icon-btn{
+    background:transparent;border:1px solid var(--line);color:var(--ink-1);
+    border-radius:999px;width:40px;height:40px;cursor:pointer;font-size:1rem;
+    transition:border-color .2s;
+  }
+  .icon-btn:hover{border-color:var(--accent);}
 
+  .hp-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+  .hp-bar{
+    flex:1;height:12px;border-radius:999px;overflow:hidden;
+    background:var(--navy-700);border:1px solid var(--line);
+  }
+  .hp-fill{
+    height:100%;width:100%;border-radius:999px;
+    background:var(--accent-grad);
+    transition:width .2s, background .3s;
+  }
+  .hp-fill.warn{background:var(--warn);}
+  .hp-fill.danger{background:var(--danger);}
+  #hpText{font-weight:800;min-width:2.6em;text-align:right;font-variant-numeric:tabular-nums;}
+
+  /* ---------- play area ---------- */
   #gameArea{
     position:relative;
     width:100%;
-    height:420px;
+    height:480px;
     border-radius:12px;
     overflow:hidden;
     background:
@@ -112,47 +136,109 @@
     border:1px solid var(--line);
     cursor:crosshair;
     touch-action:none;
+    user-select:none;-webkit-user-select:none;
   }
+  #gameArea.frozen{box-shadow:inset 0 0 70px rgba(124,155,255,.4);border-color:var(--accent-2);}
+  #gameArea.flash{animation:flash .35s ease-out;}
+  @keyframes flash{
+    0%{box-shadow:inset 0 0 70px 12px rgba(255,107,107,.65);}
+    100%{box-shadow:inset 0 0 0 0 rgba(255,107,107,0);}
+  }
+
   .bug{
-    position:absolute;
-    width:44px;height:44px;
+    position:absolute;left:0;top:0;
     display:flex;align-items:center;justify-content:center;
-    font-size:24px;
     border-radius:50%;
     background:rgba(255,107,107,.12);
     border:1px solid rgba(255,107,107,.4);
-    user-select:none;
-    transform:translate(-50%,-50%);
-    transition:transform .08s;
-    will-change:top;
+    will-change:transform;
   }
-  .bug:hover{transform:translate(-50%,-50%) scale(1.1);}
-  .bug.gold{
-    background:rgba(79,209,197,.14);
-    border-color:rgba(79,209,197,.5);
+  .bug .em{display:block;line-height:1;pointer-events:none;}
+  .bug .em.hurt{animation:hurt .15s ease-out;}
+  @keyframes hurt{0%{transform:scale(1.4);}100%{transform:scale(1);}}
+  .bug.gold{background:rgba(79,209,197,.14);border-color:rgba(79,209,197,.6);}
+  .bug.runner{background:rgba(255,184,77,.12);border-color:rgba(255,184,77,.55);}
+  .bug.armored{background:rgba(167,139,250,.16);border-color:rgba(167,139,250,.6);}
+  .bug.boss{
+    background:rgba(255,107,107,.22);border:2px solid var(--danger);
+    box-shadow:0 0 28px rgba(255,107,107,.55);
+    animation:bossPulse 1s ease-in-out infinite;
   }
+  @keyframes bossPulse{
+    0%,100%{box-shadow:0 0 18px rgba(255,107,107,.4);}
+    50%{box-shadow:0 0 36px rgba(255,107,107,.8);}
+  }
+  .bug.decoy{background:rgba(72,199,116,.14);border:1px dashed rgba(72,199,116,.7);}
+  .bug.power{background:rgba(124,155,255,.18);border:1px solid rgba(124,155,255,.7);}
+  .pips{
+    position:absolute;left:8%;right:8%;bottom:-9px;height:5px;
+    border-radius:3px;overflow:hidden;background:rgba(255,255,255,.15);
+  }
+  .pips i{display:block;height:100%;width:100%;background:var(--danger);transition:width .1s;}
+
   .pop{
     position:absolute;
     font-weight:800;font-size:.95rem;
     color:var(--accent);
-    pointer-events:none;
+    pointer-events:none;white-space:nowrap;
     transform:translate(-50%,-50%);
-    animation:popup .6s ease forwards;
+    animation:popup .7s ease forwards;
+    text-shadow:0 1px 6px rgba(0,0,0,.6);
   }
   @keyframes popup{
     0%{opacity:1;transform:translate(-50%,-50%) translateY(0);}
-    100%{opacity:0;transform:translate(-50%,-50%) translateY(-36px);}
+    100%{opacity:0;transform:translate(-50%,-50%) translateY(-38px);}
+  }
+  .banner{
+    position:absolute;left:50%;top:36%;
+    transform:translate(-50%,-50%);
+    font-size:1.7rem;font-weight:800;text-align:center;line-height:1.3;
+    pointer-events:none;white-space:nowrap;
+    color:var(--ink-0);text-shadow:0 0 20px rgba(79,209,197,.8),0 2px 8px rgba(0,0,0,.7);
+    animation:banner 1.5s ease forwards;
+  }
+  .banner small{display:block;font-size:.95rem;color:var(--warn);}
+  @keyframes banner{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.8);}
+    15%{opacity:1;transform:translate(-50%,-50%) scale(1);}
+    80%{opacity:1;}
+    100%{opacity:0;}
   }
 
+  /* ---------- overlay (menu / result) ---------- */
   .overlay{
     position:absolute;inset:0;
-    display:flex;align-items:center;justify-content:center;
-    flex-direction:column;gap:18px;
-    background:rgba(7,11,22,.88);
-    text-align:center;padding:24px;
+    display:flex;align-items:center;justify-content:flex-start;
+    flex-direction:column;gap:14px;
+    background:rgba(7,11,22,.92);
+    text-align:center;padding:20px;
+    overflow-y:auto;cursor:default;
   }
+  .overlay > :first-child{margin-top:auto;}
+  .overlay > :last-child{margin-bottom:auto;}
   .overlay h2{margin:0;font-size:1.5rem;}
-  .overlay p{margin:0;color:var(--ink-1);max-width:380px;}
+  .overlay p{margin:0;color:var(--ink-1);max-width:400px;}
+
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:4px;gap:4px;}
+  .seg button{
+    font-family:inherit;font-size:.85rem;font-weight:700;
+    padding:8px 16px;border:none;border-radius:999px;cursor:pointer;
+    background:transparent;color:var(--ink-1);
+  }
+  .seg button.active{background:var(--accent-grad);color:var(--navy-950);}
+  .best-line{font-size:.85rem;color:var(--ink-2);}
+
+  .rank{
+    font-size:3.4rem;font-weight:900;line-height:1;
+    background:var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .stats{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 24px;
+    font-size:.9rem;color:var(--ink-1);text-align:left;
+  }
+  .stats b{color:var(--ink-0);float:right;margin-left:12px;}
+  .record{color:var(--warn);font-weight:800;font-size:.9rem;}
+
   .btn{
     display:inline-flex;align-items:center;gap:8px;
     padding:14px 28px;border-radius:10px;
@@ -169,7 +255,26 @@
   }
   .btn-ghost:hover{border-color:var(--accent);}
 
-  .rule-note{margin-top:18px;color:var(--ink-2);font-size:.85rem;text-align:center;}
+  /* ---------- rules / legend ---------- */
+  .legend{
+    margin-top:20px;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;
+  }
+  .legend div{
+    display:flex;gap:10px;align-items:flex-start;
+    font-size:.82rem;color:var(--ink-1);line-height:1.5;
+    background:var(--navy-950);border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+  }
+  .legend .ic{font-size:1.3rem;line-height:1.2;flex:none;}
+  .legend b{color:var(--ink-0);display:block;}
+  .rule-note{margin:18px 0 0;color:var(--ink-2);font-size:.85rem;text-align:center;}
+
+  @media (max-width:560px){
+    .wrap{padding:0 16px;}
+    .game-panel{padding:16px;}
+    #gameArea{height:440px;}
+    .hud-value{font-size:1.15rem;}
+  }
 </style>
 </head>
 <body>
@@ -191,7 +296,7 @@
     <div class="game-head">
       <span class="sec-tag">Mini Game</span>
       <h1>🐛 バグ退治チャレンジ</h1>
-      <p>画面に出てくる「バグ」をクリック（タップ）して退治しよう。ティール色のバグは高得点！30秒でどれだけ退治できるか挑戦してみてください。</p>
+      <p>システムを守り抜け！バグを退治してコンボを繋ぎ、ウェーブごとに強くなる敵とボスを撃破しよう。逃がすとシステム安定度が下がり、「仕様」を誤って退治してもダメージを受けます。</p>
     </div>
 
     <div class="game-panel">
@@ -201,24 +306,44 @@
           <span class="hud-value accent" id="score">0</span>
         </div>
         <div class="hud-item">
+          <span class="hud-label">Combo</span>
+          <span class="hud-value" id="combo">0<small>×1</small></span>
+        </div>
+        <div class="hud-item">
+          <span class="hud-label">Wave</span>
+          <span class="hud-value" id="wave">1</span>
+        </div>
+        <div class="hud-item">
           <span class="hud-label">Time</span>
-          <span class="hud-value" id="time">30</span>
+          <span class="hud-value" id="time">60</span>
         </div>
         <div class="hud-item">
           <span class="hud-label">Best</span>
           <span class="hud-value" id="best">0</span>
         </div>
+        <button class="icon-btn" id="soundBtn" type="button" aria-label="効果音の切り替え">🔊</button>
       </div>
 
-      <div id="gameArea">
-        <div class="overlay" id="startOverlay">
-          <h2>準備はいいですか？</h2>
-          <p>30秒間でできるだけ多くのバグを退治してスコアを稼ごう。</p>
-          <button class="btn" id="startBtn">スタート ▶</button>
-        </div>
+      <div class="hp-row">
+        <span class="hud-label">System</span>
+        <div class="hp-bar"><div class="hp-fill" id="hpFill"></div></div>
+        <span id="hpText">100</span>
       </div>
 
-      <p class="rule-note">通常のバグ：+10点　/　ティールのバグ：+30点（出現時間が短め）</p>
+      <div id="gameArea"></div>
+
+      <div class="legend">
+        <div><span class="ic">🐛</span><span><b>バグ +10</b>その場に留まる。逃がすと HP -5。</span></div>
+        <div><span class="ic">🪲</span><span><b>ランナー +20</b>画面内を走り回る。逃がすと HP -5。</span></div>
+        <div><span class="ic">🕷️</span><span><b>装甲バグ +40</b>3回クリックが必要。逃がすと HP -10。</span></div>
+        <div><span class="ic">🐝</span><span><b>ゴールド +30</b>一瞬で消えるボーナス。逃がしてもノーダメージ。</span></div>
+        <div><span class="ic">👾</span><span><b>ボス +200</b>偶数ウェーブに出現。倒すと +5秒。逃がすと HP -25。</span></div>
+        <div><span class="ic">✅</span><span><b>「仕様です」</b>クリック厳禁！ HP -10 & コンボ途切れ。</span></div>
+        <div><span class="ic">⏱️</span><span><b>フリーズ</b>4秒間バグの動きと消滅を止める。</span></div>
+        <div><span class="ic">💣</span><span><b>ボム</b>画面内のバグ全員に3ダメージ。</span></div>
+        <div><span class="ic">🔧</span><span><b>リペア</b>HP を 20 回復。</span></div>
+      </div>
+      <p class="rule-note">連続で退治するとコンボ倍率アップ（10コンボごとに +1、最大 ×4）。空振りやバグを逃すとコンボは途切れます。</p>
     </div>
   </div>
 </main>
@@ -227,123 +352,497 @@
 (function(){
   var gameArea = document.getElementById('gameArea');
   var scoreEl = document.getElementById('score');
+  var comboEl = document.getElementById('combo');
+  var waveEl = document.getElementById('wave');
   var timeEl = document.getElementById('time');
   var bestEl = document.getElementById('best');
-  var startOverlay = document.getElementById('startOverlay');
-  var startBtn = document.getElementById('startBtn');
+  var hpFill = document.getElementById('hpFill');
+  var hpText = document.getElementById('hpText');
+  var soundBtn = document.getElementById('soundBtn');
 
-  var score = 0;
-  var timeLeft = 30;
+  /* ---------- settings ---------- */
+  var BASE_DURATION = 60;          // seconds
+  var WAVE_MS = 15000;             // a new wave every 15s
+  var MAX_HP = 100;
+  var FREEZE_MS = 4000;
+  var BOSS_BONUS_SEC = 5;
+
+  // ranks: [S, A, B] score thresholds
+  var DIFFS = {
+    easy:   { label:'かんたん', spawn:[600, 950], dmg:0.7, speed:0.8,  ranks:[4500, 3000, 1500] },
+    normal: { label:'ふつう',   spawn:[450, 800], dmg:1,   speed:1,    ranks:[6000, 4000, 2000] },
+    hard:   { label:'むずかしい', spawn:[330, 620], dmg:1.5, speed:1.25, ranks:[8000, 5500, 3000] }
+  };
+
+  // dmg: HP lost when it escapes.  speed: px/sec.  life: ms before it escapes.
+  var TYPES = {
+    normal:  { emoji:['🐛'],  pts:10,  life:1800, hp:1, speed:0,   dmg:5,  size:44, cls:'' },
+    runner:  { emoji:['🪲'],  pts:20,  life:2800, hp:1, speed:120, dmg:5,  size:44, cls:'runner' },
+    gold:    { emoji:['🐝'],  pts:30,  life:1000, hp:1, speed:0,   dmg:0,  size:44, cls:'gold' },
+    armored: { emoji:['🕷️'], pts:40,  life:3200, hp:3, speed:40,  dmg:10, size:54, cls:'armored' },
+    boss:    { emoji:['👾'],  pts:200, life:9000, hp:0, speed:55,  dmg:25, size:80, cls:'boss' },
+    decoy:   { emoji:['✅'],  pts:0,   life:1600, hp:1, speed:0,   dmg:0,  size:44, cls:'decoy' },
+    freeze:  { emoji:['⏱️'], pts:0,   life:2500, hp:1, speed:0,   dmg:0,  size:44, cls:'power', power:true },
+    bomb:    { emoji:['💣'],  pts:0,   life:2500, hp:1, speed:0,   dmg:0,  size:44, cls:'power', power:true },
+    repair:  { emoji:['🔧'],  pts:0,   life:2500, hp:1, speed:0,   dmg:0,  size:44, cls:'power', power:true }
+  };
+  var DECOY_DAMAGE = 10;
+
+  /* ---------- state ---------- */
+  var diffKey = 'normal';
+  var bests = {};
+  Object.keys(DIFFS).forEach(function(k){
+    var v = 0;
+    try{ v = parseInt(localStorage.getItem('skyline_bug_best_' + k) || '0', 10) || 0; }catch(e){}
+    bests[k] = v;
+  });
+
   var playing = false;
-  var spawnTimer = null;
-  var countdownTimer = null;
-  var bugEmojis = ['🐛','🪲','🕷️'];
+  var rafId = null;
+  var lastTs = 0;
+  var bugs = [];
 
-  var best = 0;
-  try{
-    best = parseInt(localStorage.getItem('skyline_bug_best') || '0', 10) || 0;
-  }catch(e){ best = 0; }
-  bestEl.textContent = best;
+  var score, hp, combo, maxCombo, kills, clicks, hits, bossKills;
+  var elapsed, duration, curWave, spawnTimer, freezeUntil, frozen;
+  var aw = 0, ah = 0;
 
+  var muted = false;
+  var audioCtx = null;
+
+  /* ---------- helpers ---------- */
   function rand(min, max){ return Math.random() * (max - min) + min; }
+  function diff(){ return DIFFS[diffKey]; }
+  function multiplier(){ return Math.min(4, 1 + Math.floor(combo / 10)); }
 
-  function spawnBug(){
-    if(!playing) return;
-    var areaRect = gameArea.getBoundingClientRect();
-    var size = 44;
-    var x = rand(size, areaRect.width - size);
-    var y = rand(size, areaRect.height - size);
+  var hudCache = {};
+  function setText(el, key, html){
+    if(hudCache[key] === html) return;
+    hudCache[key] = html;
+    el.innerHTML = html;
+  }
 
-    var isGold = Math.random() < 0.25;
-    var bug = document.createElement('div');
-    bug.className = 'bug' + (isGold ? ' gold' : '');
-    bug.textContent = bugEmojis[Math.floor(Math.random() * bugEmojis.length)];
-    bug.style.left = x + 'px';
-    bug.style.top = y + 'px';
+  function sfx(kind){
+    if(muted) return;
+    var t = {
+      hit:   [520, 0.05, 'square',   0.05],
+      kill:  [760, 0.09, 'square',   0.06],
+      bad:   [140, 0.22, 'sawtooth', 0.09],
+      power: [980, 0.14, 'triangle', 0.08],
+      boss:  [200, 0.40, 'sawtooth', 0.09],
+      end:   [330, 0.50, 'triangle', 0.08]
+    }[kind];
+    if(!t) return;
+    try{
+      if(!audioCtx){
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if(!AC) return;
+        audioCtx = new AC();
+      }
+      if(audioCtx.state === 'suspended') audioCtx.resume();
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      var now = audioCtx.currentTime;
+      osc.type = t[2];
+      osc.frequency.setValueAtTime(t[0], now);
+      gain.gain.setValueAtTime(t[3], now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + t[1]);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + t[1] + 0.02);
+    }catch(e){}
+  }
 
-    var lifetime = isGold ? 900 : 1500;
-    var removed = false;
+  function pop(x, y, text, color){
+    var el = document.createElement('div');
+    el.className = 'pop';
+    el.textContent = text;
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    if(color) el.style.color = color;
+    gameArea.appendChild(el);
+    setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 750);
+  }
 
-    function remove(){
-      if(removed) return;
-      removed = true;
-      if(bug.parentNode) bug.parentNode.removeChild(bug);
-    }
+  function banner(html){
+    var el = document.createElement('div');
+    el.className = 'banner';
+    el.innerHTML = html;
+    gameArea.appendChild(el);
+    setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 1550);
+  }
 
-    bug.addEventListener('click', function(ev){
-      if(removed) return;
-      var points = isGold ? 30 : 10;
-      score += points;
-      scoreEl.textContent = score;
+  function flash(){
+    gameArea.classList.remove('flash');
+    void gameArea.offsetWidth;
+    gameArea.classList.add('flash');
+  }
 
-      var pop = document.createElement('div');
-      pop.className = 'pop';
-      pop.textContent = '+' + points;
-      pop.style.left = x + 'px';
-      pop.style.top = y + 'px';
-      gameArea.appendChild(pop);
-      setTimeout(function(){ if(pop.parentNode) pop.parentNode.removeChild(pop); }, 650);
+  /* ---------- entities ---------- */
+  function render(e){
+    e.el.style.transform = 'translate(' + (e.x - e.size / 2).toFixed(1) + 'px,' + (e.y - e.size / 2).toFixed(1) + 'px)';
+  }
 
-      remove();
+  function removeEntity(e){
+    if(e.dead) return;
+    e.dead = true;
+    var i = bugs.indexOf(e);
+    if(i >= 0) bugs.splice(i, 1);
+    if(e.el.parentNode) e.el.parentNode.removeChild(e.el);
+  }
+
+  function spawnEntity(key){
+    var cfg = TYPES[key];
+    var wave = curWave;
+    var half = cfg.size / 2 + 6;
+    var e = {
+      type: key, cfg: cfg, dead: false,
+      size: cfg.size,
+      x: rand(half, Math.max(half + 1, aw - half)),
+      y: rand(half, Math.max(half + 1, ah - half)),
+      age: 0, life: cfg.life
+    };
+    e.hp = e.maxHp = (key === 'boss') ? (2 + wave * 3) : cfg.hp;
+
+    var sp = cfg.speed * diff().speed * (1 + 0.08 * (wave - 1));
+    var ang = rand(0, Math.PI * 2);
+    e.speed = sp;
+    e.vx = Math.cos(ang) * sp;
+    e.vy = Math.sin(ang) * sp;
+
+    var el = document.createElement('div');
+    el.className = 'bug' + (cfg.cls ? ' ' + cfg.cls : '');
+    el.style.width = cfg.size + 'px';
+    el.style.height = cfg.size + 'px';
+    el.style.fontSize = Math.round(cfg.size * 0.55) + 'px';
+    el.innerHTML = '<span class="em">' + cfg.emoji[Math.floor(Math.random() * cfg.emoji.length)] + '</span>' +
+      (e.maxHp > 1 ? '<span class="pips"><i></i></span>' : '');
+    el.addEventListener('pointerdown', function(ev){
+      ev.stopPropagation();
+      ev.preventDefault();
+      onHit(e);
     });
-
-    gameArea.appendChild(bug);
-    setTimeout(remove, lifetime);
+    e.el = el;
+    render(e);
+    gameArea.appendChild(el);
+    bugs.push(e);
+    return e;
   }
 
-  function tickSpawn(){
-    spawnBug();
-    if(playing){
-      spawnTimer = setTimeout(tickSpawn, rand(380, 700));
+  function pickType(){
+    var w = {
+      normal: 50,
+      runner: 14 + curWave * 4,
+      gold: 10,
+      armored: curWave >= 2 ? 6 + curWave * 3 : 0,
+      decoy: 10,
+      freeze: 2,
+      bomb: 2,
+      repair: hp < 70 ? 4 : 1
+    };
+    var total = 0, k;
+    for(k in w) total += w[k];
+    var r = Math.random() * total;
+    for(k in w){
+      r -= w[k];
+      if(r < 0) return k;
     }
+    return 'normal';
   }
 
-  function endGame(){
-    playing = false;
-    clearTimeout(spawnTimer);
-    clearInterval(countdownTimer);
-    gameArea.querySelectorAll('.bug, .pop').forEach(function(el){ el.remove(); });
+  function nextInterval(){
+    var d = diff();
+    return rand(d.spawn[0], d.spawn[1]) * Math.max(0.5, 1 - 0.1 * (curWave - 1));
+  }
 
-    if(score > best){
-      best = score;
-      bestEl.textContent = best;
-      try{ localStorage.setItem('skyline_bug_best', String(best)); }catch(e){}
+  /* ---------- combat ---------- */
+  function damage(amount, x, y){
+    var n = Math.max(1, Math.round(amount * diff().dmg));
+    hp = Math.max(0, hp - n);
+    combo = 0;
+    flash();
+    sfx('bad');
+    if(x !== undefined) pop(x, y, '-' + n + ' HP', '#ff6b6b');
+    if(hp <= 0) endGame('down');
+  }
+
+  function kill(e, byClick){
+    if(byClick){
+      combo++;
+      if(combo > maxCombo) maxCombo = combo;
+    }
+    kills++;
+    var pts = e.cfg.pts * multiplier();
+    score += pts;
+    pop(e.x, e.y, '+' + pts);
+    if(e.type === 'boss'){
+      bossKills++;
+      duration += BOSS_BONUS_SEC;
+      banner('BOSS撃破！<small>+' + BOSS_BONUS_SEC + '秒</small>');
+      sfx('power');
+    }else{
+      sfx('kill');
+    }
+    removeEntity(e);
+  }
+
+  function hurt(e, amount, byClick){
+    e.hp -= amount;
+    if(e.hp > 0){
+      var em = e.el.querySelector('.em');
+      if(em){
+        em.classList.remove('hurt');
+        void em.offsetWidth;
+        em.classList.add('hurt');
+      }
+      var pip = e.el.querySelector('.pips i');
+      if(pip) pip.style.width = Math.max(0, e.hp / e.maxHp * 100) + '%';
+      if(byClick) sfx('hit');
+      return;
+    }
+    kill(e, byClick);
+  }
+
+  function applyPower(e){
+    if(e.type === 'freeze'){
+      freezeUntil = elapsed + FREEZE_MS;
+      banner('FREEZE！');
+    }else if(e.type === 'repair'){
+      hp = Math.min(MAX_HP, hp + 20);
+      pop(e.x, e.y, '+20 HP', '#4fd1c5');
+    }else if(e.type === 'bomb'){
+      banner('BOMB！');
+      bugs.slice().forEach(function(t){
+        if(t === e || t.dead || t.type === 'decoy' || t.cfg.power) return;
+        hurt(t, 3, false);
+      });
+    }
+    sfx('power');
+  }
+
+  function onHit(e){
+    if(!playing || e.dead) return;
+    clicks++;
+    hits++;
+    if(e.type === 'decoy'){
+      removeEntity(e);
+      damage(DECOY_DAMAGE, e.x, e.y);
+      return;
+    }
+    if(e.cfg.power){
+      removeEntity(e);
+      applyPower(e);
+      return;
+    }
+    hurt(e, 1, true);
+  }
+
+  function miss(ev){
+    if(!playing) return;
+    clicks++;
+    combo = 0;
+    var r = gameArea.getBoundingClientRect();
+    pop(ev.clientX - r.left, ev.clientY - r.top, '✕', '#8a95b5');
+  }
+
+  function expire(e){
+    var dmg = e.cfg.dmg;
+    var x = e.x, y = e.y;
+    removeEntity(e);
+    if(dmg > 0) damage(dmg, x, y);
+  }
+
+  /* ---------- loop ---------- */
+  function update(dt){
+    elapsed += dt;
+    var remaining = duration * 1000 - elapsed;
+    if(remaining <= 0){ endGame('time'); return; }
+
+    var wave = Math.floor(elapsed / WAVE_MS) + 1;
+    if(wave !== curWave){
+      curWave = wave;
+      if(wave % 2 === 0){
+        spawnEntity('boss');
+        banner('WAVE ' + wave + '<small>ボス出現！</small>');
+        sfx('boss');
+      }else{
+        banner('WAVE ' + wave);
+      }
     }
 
-    var overlay = document.createElement('div');
-    overlay.className = 'overlay';
-    overlay.innerHTML =
-      '<h2>ゲーム終了！</h2>' +
-      '<p>スコア: <strong style="color:var(--accent);font-size:1.3rem;">' + score + '</strong> 点</p>' +
-      '<div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">' +
-        '<button class="btn" id="retryBtn">もう一度プレイ ▶</button>' +
-        '<a href="index.html" class="btn btn-ghost">サイトに戻る</a>' +
-      '</div>';
-    gameArea.appendChild(overlay);
+    var nowFrozen = elapsed < freezeUntil;
+    if(nowFrozen !== frozen){
+      frozen = nowFrozen;
+      gameArea.classList.toggle('frozen', frozen);
+    }
 
-    document.getElementById('retryBtn').addEventListener('click', startGame);
+    spawnTimer -= dt;
+    if(spawnTimer <= 0){
+      spawnEntity(pickType());
+      spawnTimer = nextInterval();
+    }
+
+    for(var i = bugs.length - 1; i >= 0; i--){
+      var e = bugs[i];
+      if(!e || e.dead) continue;
+      if(!frozen){
+        e.age += dt;
+        if(e.age >= e.life){
+          expire(e);
+          if(!playing) return;
+          continue;
+        }
+        if(e.speed > 0){
+          var s = dt / 1000;
+          var half = e.size / 2;
+          e.x += e.vx * s;
+          e.y += e.vy * s;
+          if(e.x < half){ e.x = half; e.vx = Math.abs(e.vx); }
+          if(e.x > aw - half){ e.x = aw - half; e.vx = -Math.abs(e.vx); }
+          if(e.y < half){ e.y = half; e.vy = Math.abs(e.vy); }
+          if(e.y > ah - half){ e.y = ah - half; e.vy = -Math.abs(e.vy); }
+        }
+        if(e.life - e.age < 500){
+          e.el.style.opacity = (Math.floor(e.age / 100) % 2) ? '0.4' : '1';
+        }
+      }
+      render(e);
+    }
+
+    updateHud(remaining);
+  }
+
+  function updateHud(remaining){
+    setText(scoreEl, 'score', String(score));
+    var m = multiplier();
+    setText(comboEl, 'combo', combo + '<small>×' + m + '</small>');
+    comboEl.classList.toggle('combo-hot', m > 1);
+    setText(waveEl, 'wave', String(curWave));
+    setText(timeEl, 'time', String(Math.max(0, Math.ceil(remaining / 1000))));
+    setText(hpText, 'hp', String(hp));
+    hpFill.style.width = (hp / MAX_HP * 100) + '%';
+    hpFill.className = 'hp-fill' + (hp <= 25 ? ' danger' : hp <= 50 ? ' warn' : '');
+  }
+
+  function frame(ts){
+    if(!playing) return;
+    var dt = Math.min(ts - lastTs, 50);   // a hidden tab effectively pauses the game
+    lastTs = ts;
+    update(dt);
+    if(playing) rafId = requestAnimationFrame(frame);
+  }
+
+  /* ---------- start / end ---------- */
+  function clearField(){
+    bugs.length = 0;
+    gameArea.querySelectorAll('.bug, .pop, .banner, .overlay').forEach(function(el){ el.remove(); });
+    gameArea.classList.remove('frozen', 'flash');
   }
 
   function startGame(){
-    gameArea.querySelectorAll('.overlay').forEach(function(el){ el.remove(); });
-    score = 0;
-    timeLeft = 30;
-    scoreEl.textContent = score;
-    timeEl.textContent = timeLeft;
+    clearField();
+    score = 0; hp = MAX_HP; combo = 0; maxCombo = 0;
+    kills = 0; clicks = 0; hits = 0; bossKills = 0;
+    elapsed = 0; duration = BASE_DURATION;
+    curWave = 1; spawnTimer = 0; freezeUntil = 0; frozen = false;
+    aw = gameArea.clientWidth;
+    ah = gameArea.clientHeight;
+    hudCache = {};
+    bestEl.textContent = bests[diffKey];
+    updateHud(duration * 1000);
+    banner('WAVE 1<small>' + diff().label + '</small>');
+
     playing = true;
-
-    countdownTimer = setInterval(function(){
-      timeLeft -= 1;
-      timeEl.textContent = Math.max(timeLeft, 0);
-      if(timeLeft <= 0){
-        endGame();
-      }
-    }, 1000);
-
-    tickSpawn();
+    lastTs = performance.now();
+    rafId = requestAnimationFrame(frame);
   }
 
-  startBtn.addEventListener('click', startGame);
+  function endGame(reason){
+    playing = false;
+    if(rafId) cancelAnimationFrame(rafId);
+    updateHud(0);
+    clearField();
+
+    var d = diff();
+    var rank = score >= d.ranks[0] ? 'S' : score >= d.ranks[1] ? 'A' : score >= d.ranks[2] ? 'B' : 'C';
+    var isRecord = score > bests[diffKey];
+    if(isRecord){
+      bests[diffKey] = score;
+      bestEl.textContent = score;
+      try{ localStorage.setItem('skyline_bug_best_' + diffKey, String(score)); }catch(e){}
+    }
+    sfx('end');
+
+    var acc = clicks ? Math.round(hits / clicks * 100) : 0;
+    var title = reason === 'down' ? '💥 システムダウン…' : '🎉 ゲーム終了！';
+    var html =
+      '<div class="rank">' + rank + '</div>' +
+      '<p>スコア: <strong style="color:var(--accent);font-size:1.3rem;">' + score + '</strong> 点（' + d.label + '）</p>' +
+      (isRecord && score > 0 ? '<div class="record">🏆 ハイスコア更新！</div>' : '') +
+      '<div class="stats">' +
+        '<span>撃破数<b>' + kills + '</b></span>' +
+        '<span>最大コンボ<b>' + maxCombo + '</b></span>' +
+        '<span>命中率<b>' + acc + '%</b></span>' +
+        '<span>ボス撃破<b>' + bossKills + '</b></span>' +
+        '<span>到達ウェーブ<b>' + curWave + '</b></span>' +
+        '<span>残りHP<b>' + hp + '</b></span>' +
+      '</div>';
+    showOverlay(title, html, 'もう一度プレイ ▶', true);
+  }
+
+  /* ---------- menu / result overlay ---------- */
+  function showOverlay(title, bodyHtml, btnLabel, withBack){
+    gameArea.querySelectorAll('.overlay').forEach(function(el){ el.remove(); });
+    var overlay = document.createElement('div');
+    overlay.className = 'overlay';
+
+    var seg = '<div class="seg" role="group" aria-label="難易度">';
+    Object.keys(DIFFS).forEach(function(k){
+      seg += '<button type="button" data-diff="' + k + '"' + (k === diffKey ? ' class="active"' : '') + '>' + DIFFS[k].label + '</button>';
+    });
+    seg += '</div>';
+
+    overlay.innerHTML =
+      '<h2>' + title + '</h2>' +
+      bodyHtml +
+      seg +
+      '<div class="best-line" id="bestLine"></div>' +
+      '<div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">' +
+        '<button class="btn" id="startBtn" type="button">' + btnLabel + '</button>' +
+        (withBack ? '<a href="index.html" class="btn btn-ghost">サイトに戻る</a>' : '') +
+      '</div>';
+    gameArea.appendChild(overlay);
+
+    var bestLine = overlay.querySelector('#bestLine');
+    function refresh(){
+      bestLine.textContent = DIFFS[diffKey].label + ' のハイスコア: ' + bests[diffKey];
+      bestEl.textContent = bests[diffKey];
+    }
+    refresh();
+
+    overlay.querySelectorAll('.seg button').forEach(function(b){
+      b.addEventListener('click', function(){
+        diffKey = b.getAttribute('data-diff');
+        overlay.querySelectorAll('.seg button').forEach(function(o){
+          o.classList.toggle('active', o === b);
+        });
+        refresh();
+      });
+    });
+    overlay.querySelector('#startBtn').addEventListener('click', startGame);
+  }
+
+  /* ---------- wiring ---------- */
+  gameArea.addEventListener('pointerdown', miss);
+
+  soundBtn.addEventListener('click', function(){
+    muted = !muted;
+    soundBtn.textContent = muted ? '🔇' : '🔊';
+  });
+
+  showOverlay('準備はいいですか？',
+    '<p>60秒間、バグを退治してシステムを守ろう。ウェーブが進むほど敵は速く、強くなります。</p>',
+    'スタート ▶', false);
 })();
 </script>
 
